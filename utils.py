@@ -34,7 +34,7 @@ def split_data(X, y , test_size ,dev_size , random_state = 1) :
 
 
 
-def train_model(X , y , model_params , model_type = "svm") :
+def train_model(X , y, model_params ,model_type = "svm" ) :
     '''
     Train the model of choice with the model_type parameters
 
@@ -133,3 +133,21 @@ def predict_and_eval(model , X_test , y_test ) :
     
     # print("Test Accuracy : ",test_acc)
     return test_acc 
+
+
+def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) :
+    
+    best_acc_so_far = -1
+    best_model = None
+
+    for param_combination in list_of_all_param_combination :
+        
+        cur_model  = train_model(X_train,y_train,  param_combination,model_type = 'svm',)
+        cur_accuracy = predict_and_eval(cur_model,X_dev,y_dev)
+
+        if cur_accuracy > best_acc_so_far :
+            # print("New best accuracy : ",cur_accuracy)
+            best_acc_so_far = cur_accuracy
+            optimal_params = param_combination
+            best_model = cur_model
+    return optimal_params , best_model , best_acc_so_far
