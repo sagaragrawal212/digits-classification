@@ -1,6 +1,14 @@
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+import itertools
+
+def get_hyperparameter_combinations(gamma_ranges,C_ranges):
+    all_param_list = [gamma_ranges,C_ranges]
+    all_param_comb_list = list(itertools.product(*all_param_list))
+    list_of_all_param_combination = [{'gamma' : g , 'C' : C } for g , C in all_param_comb_list]
+
+    return list_of_all_param_combination
 
 def preprocess_data(digit_image) :
 

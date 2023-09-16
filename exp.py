@@ -15,8 +15,6 @@ import itertools
 import pdb
 from utils import *
 
-gamma_ranges = [0.001,0.01,0.1,1,10,100]
-C_ranges = [0.1 , 1 , 2 , 5 , 10 ]
 
 # Get the dataset :
 X , y = read_digits()
@@ -48,9 +46,9 @@ for dev_size , test_size in all_test_dev_combination :
     gamma_ranges = [0.001,0.01,0.1,1,10,100]
     C_ranges = [0.1 ,1,2,5,10]
 
-    all_param_list = [gamma_ranges,C_ranges]
-    all_param_comb_list = list(itertools.product(*all_param_list))
-    list_of_all_param_combination = [{'gamma' : g , 'C' : C } for g , C in all_param_comb_list]
+    
+    list_of_all_param_combination = get_hyperparameter_combinations(gamma_ranges,C_ranges)
+
     optimal_params , best_model , best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) 
 
     # print(f"Optimal para gamma = {optimal_params} ")
