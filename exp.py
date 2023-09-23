@@ -21,6 +21,9 @@ C_ranges = [0.1 , 1 , 2 , 5 , 10 ]
 # Get the dataset :
 X , y = read_digits()
 
+print("Total Number of samples in dataset : ",len(X))
+print("Size of image : ",X[0].shape)
+
 _, axes = plt.subplots(nrows=1, ncols=4, figsize=(10, 3))
 for ax, image, label in zip(axes, X, y):
     ax.set_axis_off()
