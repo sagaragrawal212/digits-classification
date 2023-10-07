@@ -1,15 +1,9 @@
 from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import itertools
-from joblib import load,dump
+from sklearn import tree
+from joblib import dump
 
-def get_hyperparameter_combinations(gamma_ranges,C_ranges):
-    all_param_list = [gamma_ranges,C_ranges]
-    all_param_comb_list = list(itertools.product(*all_param_list))
-    list_of_all_param_combination = [{'gamma' : g , 'C' : C } for g , C in all_param_comb_list]
-
-    return list_of_all_param_combination
 
 def preprocess_data(digit_image) :
 
@@ -58,6 +52,10 @@ def train_model(X , y, model_params ,model_type = "svm" ) :
 
     if model_type == "svm" :
         clf = svm.SVC
+    elif model_type == "decision_tree":
+        clf = tree.DecisionTreeClassifier
+
+
     
     model = clf(**model_params)
     
@@ -144,26 +142,22 @@ def predict_and_eval(model , X_test , y_test ) :
     return test_acc 
 
 
-def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) :
+def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'svm') :
     
     best_acc_so_far = -1
     best_model = None
 
     for param_combination in list_of_all_param_combination :
         
-        cur_model  = train_model(X_train,y_train,  param_combination,model_type = 'svm',)
+        cur_model  = train_model(X_train,y_train,  param_combination,model_type = model_type)
         cur_accuracy = predict_and_eval(cur_model,X_dev,y_dev)
 
         if cur_accuracy > best_acc_so_far :
             # print("New best accuracy : ",cur_accuracy)
             best_acc_so_far = cur_accuracy
             optimal_params = param_combination
-            best_model_path ="best_model "+ "_".join (["{}:{}".format(k,v) for k,v in optimal_params.items()]) + ".joblib"
             best_model = cur_model
-    
-    ## Save the best model
+            best_model_path = './models/' + model_type + "_" + "_".join([f'{k} : {v}' for k,v in optimal_params.items()]) + ".joblib"
     dump(best_model,best_model_path)
+    return optimal_params , best_model_path , best_acc_so_far
 
-    print("Model saved at {}".format(best_model_path)) 
-
-    return optimal_params  ,best_model_path , best_acc_so_far

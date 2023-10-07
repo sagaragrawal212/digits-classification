@@ -15,6 +15,7 @@ import itertools
 import pdb
 from utils import *
 from joblib import load
+from sklearn.model_selection import ParameterGrid
 
 # Get the dataset :
 X , y = read_digits()
@@ -45,12 +46,21 @@ for dev_size , test_size in all_test_dev_combination :
     X_dev = preprocess_data(X_dev)
 
 
-    #HYPER PARAMETER TUNING 
-    gamma_ranges = [0.001,0.01,0.1,1,10,100]
-    C_ranges = [0.1 ,1,2,5,10]  
-    list_of_all_param_combination = get_hyperparameter_combinations(gamma_ranges,C_ranges)
+    # Model 1 : SVM
+    param_grid = {'gamma': [0.001,0.01,0.1,1,10,100], 'C': [0.1 ,1,2,5,10]}
+    list_of_all_param_combination_svm = ParameterGrid(param_grid)
 
-    optimal_params ,best_model_path, best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) 
+    # Model 2 : Decision Tree
+    param_grid = {'criterion':['gini','entropy'],
+              'max_depth':[10,20,30,40,50,60,70,80,90,100]
+              }
+    list_of_all_param_combination_dt = ParameterGrid(param_grid)
+
+    list_of_models = {'svm' : list_of_all_param_combination_svm ,
+                        'decision_tree' : list_of_all_param_combination_dt }
+    
+    for model_type 
+    optimal_params ,best_model_path, best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'svm') 
     
     best_model = load(best_model_path)
     # print(f"Optimal para gamma = {optimal_params} ")
