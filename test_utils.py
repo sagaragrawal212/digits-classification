@@ -1,5 +1,6 @@
 from utils import *
 import os
+from sklearn.model_selection import ParameterGrid
 
 def test_for_hparam_combinations_count():
 
@@ -12,7 +13,8 @@ def dummy_hyper_parameters():
     
     gamma_list = [0.001,0.01,0.1,1,10,100]
     C_ranges = [0.1 ,1,2,5,10]  
-    h_params_combinations = get_hyperparameter_combinations(gamma_list,C_ranges)
+    param_grid = {'gamma': [0.001,0.01,0.1,1,10,100], 'C': [0.1 ,1,2,5,10]}
+    h_params_combinations =ParameterGrid(param_grid)
 
     return gamma_list , C_ranges,h_params_combinations
 
