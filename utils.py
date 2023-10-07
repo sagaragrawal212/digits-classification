@@ -55,8 +55,6 @@ def train_model(X , y, model_params ,model_type = "svm" ) :
     elif model_type == "decision_tree":
         clf = tree.DecisionTreeClassifier
 
-
-    
     model = clf(**model_params)
     
     model.fit(X, y)
@@ -157,7 +155,7 @@ def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model
             best_acc_so_far = cur_accuracy
             optimal_params = param_combination
             best_model = cur_model
-            best_model_path = './models/' + model_type + "_" + "_".join([f'{k} : {v}' for k,v in optimal_params.items()]) + ".joblib"
+            best_model_path = model_type + "_" + "_".join([f'{k} : {v}' for k,v in optimal_params.items()]) + ".joblib"
     dump(best_model,best_model_path)
     return optimal_params , best_model_path , best_acc_so_far
 
