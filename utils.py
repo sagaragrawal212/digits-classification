@@ -2,6 +2,7 @@ from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import itertools
+from joblib import load,dump
 
 def get_hyperparameter_combinations(gamma_ranges,C_ranges):
     all_param_list = [gamma_ranges,C_ranges]
@@ -157,5 +158,12 @@ def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) :
             # print("New best accuracy : ",cur_accuracy)
             best_acc_so_far = cur_accuracy
             optimal_params = param_combination
+            best_model_path ="best_model "+ "_".join (["{}:{}".format(k,v) for k,v in optimal_params.items()]) + ".joblib"
             best_model = cur_model
-    return optimal_params , best_model , best_acc_so_far
+    
+    ## Save the best model
+    dump(best_model,best_model_path)
+
+    print("Model saved at {}".format(best_model_path)) 
+
+    return optimal_params  ,best_model_path , best_acc_so_far

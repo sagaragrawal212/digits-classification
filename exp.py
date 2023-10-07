@@ -14,7 +14,7 @@ import itertools
 # Import datasets, classifiers and performance metrics
 import pdb
 from utils import *
-
+from joblib import load
 
 # Get the dataset :
 X , y = read_digits()
@@ -47,8 +47,9 @@ for dev_size , test_size in all_test_dev_combination :
     C_ranges = [0.1 ,1,2,5,10]  
     list_of_all_param_combination = get_hyperparameter_combinations(gamma_ranges,C_ranges)
 
-    optimal_params , best_model , best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) 
-
+    optimal_params ,best_model_path, best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination) 
+    
+    best_model = load(best_model_path)
     # print(f"Optimal para gamma = {optimal_params} ")
     # Model training : Create a classifier: a support vector classifier
     # model = train_model(X_train, y_train , {'gamma' : optimal_gamma , 'C' : optimal_C} , model_type = 'svm')
