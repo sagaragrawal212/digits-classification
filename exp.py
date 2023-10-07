@@ -31,8 +31,8 @@ for ax, image, label in zip(axes, X, y):
 
 
 print("Iterating for different test and dev size : ")
-dev_splits = [0.1,0.2,0.3]
-test_splits =[0.1,0.2,0.3]
+dev_splits = [0.1]
+test_splits =[0.1]
 test_dev_list = [dev_splits,test_splits]
 all_test_dev_combination = all_param_comb_list = list(itertools.product(*test_dev_list)) 
 
@@ -56,21 +56,21 @@ for dev_size , test_size in all_test_dev_combination :
               }
     list_of_all_param_combination_dt = ParameterGrid(param_grid)
 
-    list_of_models = {'svm' : list_of_all_param_combination_svm ,
+    hparam_dict = {'svm' : list_of_all_param_combination_svm ,
                         'decision_tree' : list_of_all_param_combination_dt }
     
-    for model_type 
-    optimal_params ,best_model_path, best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'svm') 
-    
-    best_model = load(best_model_path)
-    # print(f"Optimal para gamma = {optimal_params} ")
-    # Model training : Create a classifier: a support vector classifier
-    # model = train_model(X_train, y_train , {'gamma' : optimal_gamma , 'C' : optimal_C} , model_type = 'svm')
+    for model_type in ['svm','decision_tree'] :
+        optimal_params ,best_model_path, best_acc_so_far = tune_hparams(X_train,y_train,X_dev,y_dev,hparam_dict[model_type],model_type = model_type) 
+        
+        best_model = load(best_model_path)
+        # print(f"Optimal para gamma = {optimal_params} ")
+        # Model training : Create a classifier: a support vector classifier
+        # model = train_model(X_train, y_train , {'gamma' : optimal_gamma , 'C' : optimal_C} , model_type = 'svm')
 
-    # 6. Getting the predictions on test set
-    train_acc = predict_and_eval(best_model , X_train , y_train ) 
-    dev_acc = predict_and_eval(best_model , X_dev , y_dev ) 
-    test_acc = predict_and_eval(best_model , X_test , y_test )
-    print() 
-    print(f"test_size = {test_size} ,  dev_size = {dev_size} ,  train_size  = {1 - (test_size + dev_size)} train_acc = {train_acc} dev_acc = {dev_acc}  test_acc == {test_acc} ")
-    print(f"Optimal Parameters : {optimal_params}")
+        # 6. Getting the predictions on test set
+        train_acc = predict_and_eval(best_model , X_train , y_train ) 
+        dev_acc = predict_and_eval(best_model , X_dev , y_dev ) 
+        test_acc = predict_and_eval(best_model , X_test , y_test )
+        print() 
+        print(f"test_size = {test_size} ,  dev_size = {dev_size} ,  train_size  = {1 - (test_size + dev_size)} train_acc = {train_acc} dev_acc = {dev_acc}  test_acc == {test_acc} ")
+        print(f"Optimal Parameters : {optimal_params}")
