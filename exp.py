@@ -9,6 +9,7 @@ hand-written digits, from 0-9.
 """
 
 # Standard scientific Python imports
+# dummy
 import matplotlib.pyplot as plt
 import itertools
 # Import datasets, classifiers and performance metrics
