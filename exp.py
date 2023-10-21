@@ -18,7 +18,9 @@ from utils import *
 from joblib import load
 from sklearn.model_selection import ParameterGrid
 import sys
-
+from sklearn.metrics import confusion_matrix
+import pandas as pd
+from sklearn.metrics import f1_score
 # python exp.py -max_run,-dev_size,
 
 # max_run =sys.argv[1] 
@@ -35,7 +37,7 @@ parser = argparse.ArgumentParser(description = """
 parser.add_argument('-runs',
             '--max_run',
             type = int,
-            default = 5,
+            default = 1,
             help = 'maximum number of model runs')
 
 parser.add_argument('-test_size',
@@ -51,7 +53,7 @@ parser.add_argument('-dev_size',
 parser.add_argument('-model',
             '--model_type',
             type = str,
-            default = 'svm',
+            default = 'decision_tree svm',
             help = 'name of model')
 args = parser.parse_args()
 X , y = read_digits()
@@ -86,10 +88,15 @@ test_dev_list = [dev_splits,test_splits]
 all_test_dev_combination = all_param_comb_list = list(itertools.product(*test_dev_list)) 
 max_run = args.max_run
 
+predictions = dict()
+actuals = dict()
 for i in range(max_run) :
     print()
     print(f"Iteration Number : {i}")
-    for model_type in [args.model_type] :
+    for model_type in args.model_type.split(' ') :
+        print()
+        print(f"Model {model_type}")
+        all_dev_accuracy = []
         for dev_size , test_size in all_test_dev_combination :
             # Data Splitting -- to create train and test sets
             X_train, X_test,X_dev, y_train, y_test,y_dev = split_data(X , y,test_size = test_size,dev_size = dev_size)
@@ -107,9 +114,32 @@ for i in range(max_run) :
             # model = train_model(X_train, y_train , {'gamma' : optimal_gamma , 'C' : optimal_C} , model_type = 'svm')
 
             # 6. Getting the predictions on test set
-            train_acc = predict_and_eval(best_model , X_train , y_train ) 
-            dev_acc = predict_and_eval(best_model , X_dev , y_dev ) 
-            test_acc = predict_and_eval(best_model , X_test , y_test )
+            train_acc , _ ,_= predict_and_eval(best_model , X_train , y_train ) 
+            dev_acc , _,_ = predict_and_eval(best_model , X_dev , y_dev ) 
+            test_acc , predictions[model_type],actuals[model_type] = predict_and_eval(best_model , X_test , y_test )
             print() 
             print(f"test_size = {test_size} ,  dev_size = {dev_size} ,  train_size  = {1 - (test_size + dev_size)} train_acc = {train_acc} dev_acc = {dev_acc}  test_acc == {test_acc} ")
             print(f"Optimal Parameters : {optimal_params}")
+
+            all_dev_accuracy.append(dev_acc)
+        print(f"Average Dev Accuracy of {model_type}: ",sum(all_dev_accuracy)/max_run)
+
+print("Confusion Matrix Between SVM  Decision Tree predictions for Test Data : ")
+y_svm_pred = pd.Series(predictions['svm'], name='Production(SVM)')
+y_dt_pred= pd.Series(predictions['decision_tree'], name='Candidate(DT)')
+df_confusion = pd.crosstab(y_svm_pred, y_dt_pred)
+print(df_confusion)
+
+# SVM test predictions Comparison with actuals
+y_check_svm = y_svm_pred == actuals['svm']
+
+# Decision tree test Comparison with actuals
+y_check_dt = y_dt_pred == actuals['decision_tree']
+
+y_svm = pd.Series(y_check_svm, name='Production(SVM)')
+y_dt = pd.Series(y_check_dt, name='Candidate(DT)')
+df_confusion = pd.crosstab(y_svm, y_dt)
+print(df_confusion)
+
+print("F1 Score Production (SVM)" , f1_score(actuals['svm'], y_svm_pred, average='macro'))
+print("F1 Score Candidate (DT)" , f1_score(actuals['decision_tree'], y_dt_pred, average='macro'))
