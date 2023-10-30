@@ -137,7 +137,7 @@ def predict_and_eval(model , X_test , y_test ) :
     test_acc = metrics.accuracy_score(y_test,predicted)
     
     # print("Test Accuracy : ",test_acc)
-    return test_acc 
+    return test_acc , predicted ,y_test
 
 
 def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'svm') :
@@ -148,7 +148,7 @@ def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model
     for param_combination in list_of_all_param_combination :
         
         cur_model  = train_model(X_train,y_train,  param_combination,model_type = model_type)
-        cur_accuracy = predict_and_eval(cur_model,X_dev,y_dev)
+        cur_accuracy,_,_ = predict_and_eval(cur_model,X_dev,y_dev)
 
         if cur_accuracy > best_acc_so_far :
             # print("New best accuracy : ",cur_accuracy)
