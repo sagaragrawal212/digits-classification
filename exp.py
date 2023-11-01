@@ -1,5 +1,5 @@
 """
-================================
+==============================
 Recognizing hand-written digits
 ================================
 
@@ -21,6 +21,8 @@ import sys
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 from sklearn.metrics import f1_score
+import json
+import os
 # python exp.py -max_run,-dev_size,
 
 # max_run =sys.argv[1] 
@@ -55,8 +57,23 @@ parser.add_argument('-model',
             type = str,
             default = 'decision_tree svm',
             help = 'name of model')
+parser.add_argument('-config',
+            '--config_path',
+            type = str,
+            default = './config.json',
+            help = 'model hyperparameters configuration')
 args = parser.parse_args()
 X , y = read_digits()
+
+## Creating models directory
+# if os.path.exists("models"):
+#     pass
+# else :
+#     os.system("mkdir models")
+
+with open(args.config_path,'r') as f :
+    params_dict = json.loads(f.read())
+
 
 print("Total Number of samples in dataset : ",len(X))
 print("Size of image : ",X[0].shape)
@@ -68,13 +85,15 @@ for ax, image, label in zip(axes, X, y):
     ax.set_title("Training: %i" % label)
 
 # Model 1 : SVM
-param_grid = {'gamma': [0.001,0.01,0.1,1,10,100], 'C': [0.1 ,1,2,5,10]}
+param_grid = params_dict['svm']
+# param_grid = {'gamma': [0.001,0.01,0.1,1,10,100], 'C': [0.1 ,1,2,5,10]}
 list_of_all_param_combination_svm = ParameterGrid(param_grid)
 
 # Model 2 : Decision Tree
-param_grid = {'criterion':['gini','entropy'],
-            'max_depth':[10,20,30,40,50,60,70,80,90,100]
-            }
+# param_grid = {'criterion':['gini','entropy'],
+#             'max_depth':[10,20,30,40,50,60,70,80,90,100]
+#             }
+param_grid = params_dict['decision_tree']
 list_of_all_param_combination_dt = ParameterGrid(param_grid)
 
 hparam_dict = {'svm' : list_of_all_param_combination_svm ,
@@ -85,7 +104,7 @@ print("Iterating for different test and dev size : ")
 dev_splits = [args.test_size]
 test_splits =[args.dev_size]
 test_dev_list = [dev_splits,test_splits]
-all_test_dev_combination = all_param_comb_list = list(itertools.product(*test_dev_list)) 
+all_test_dev_combination = list(itertools.product(*test_dev_list)) 
 max_run = args.max_run
 
 predictions = dict()
