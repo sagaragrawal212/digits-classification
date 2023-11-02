@@ -65,11 +65,11 @@ parser.add_argument('-config',
 args = parser.parse_args()
 X , y = read_digits()
 
-## Creating models directory
-# if os.path.exists("models"):
-#     pass
-# else :
-#     os.system("mkdir models")
+# Creating models directory
+if os.path.exists("models"):
+    pass
+else :
+    os.system("mkdir models")
 
 with open(args.config_path,'r') as f :
     params_dict = json.loads(f.read())
