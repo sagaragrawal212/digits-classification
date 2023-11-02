@@ -27,6 +27,7 @@ jobs:
       - name: Run experiment
         run:
           python exp.py
-        runs:
-        using: 'docker'
-        image: '/docker/Dockerfile'
+      - name: Run docker experiment
+        run:
+          using: 'docker'
+          image: '/docker/Dockerfile'
