@@ -2,6 +2,13 @@ from utils import *
 import os
 from sklearn.model_selection import ParameterGrid
 
+# Creating models directory
+if os.path.exists("models"):
+    pass
+else :
+    os.system("mkdir models")
+
+
 def test_for_hparam_combinations_count():
 
   

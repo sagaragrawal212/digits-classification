@@ -27,3 +27,9 @@ jobs:
       - name: Run experiment
         run:
           python exp.py
+      - name: Run docker build experiment
+        run :
+          docker build -t digits:v1 -f docker/Dockerfile .
+      - name: Run docker
+        run :
+          docker run digits:v1

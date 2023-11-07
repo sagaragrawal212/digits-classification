@@ -65,11 +65,11 @@ parser.add_argument('-config',
 args = parser.parse_args()
 X , y = read_digits()
 
-## Creating models directory
-# if os.path.exists("models"):
-#     pass
-# else :
-#     os.system("mkdir models")
+# Creating models directory
+if os.path.exists("models"):
+    pass
+else :
+    os.system("mkdir models")
 
 with open(args.config_path,'r') as f :
     params_dict = json.loads(f.read())
@@ -109,13 +109,16 @@ max_run = args.max_run
 
 predictions = dict()
 actuals = dict()
-for i in range(max_run) :
+for model_type in args.model_type.split(' ') :
     print()
-    print(f"Iteration Number : {i}")
-    for model_type in args.model_type.split(' ') :
+    print(f"Model {model_type}")
+    
+    all_dev_accuracy = []
+
+    for i in range(max_run) :
         print()
-        print(f"Model {model_type}")
-        all_dev_accuracy = []
+        print(f"Iteration Number : {i}")
+           
         for dev_size , test_size in all_test_dev_combination :
             # Data Splitting -- to create train and test sets
             X_train, X_test,X_dev, y_train, y_test,y_dev = split_data(X , y,test_size = test_size,dev_size = dev_size)
@@ -141,7 +144,8 @@ for i in range(max_run) :
             print(f"Optimal Parameters : {optimal_params}")
 
             all_dev_accuracy.append(dev_acc)
-        print(f"Average Dev Accuracy of {model_type}: ",sum(all_dev_accuracy)/max_run)
+            
+    print(f"Average Dev Accuracy of {model_type}: ",sum(all_dev_accuracy)/max_run)
 
 print("Confusion Matrix Between SVM  Decision Tree predictions for Test Data : ")
 y_svm_pred = pd.Series(predictions['svm'], name='Production(SVM)')
