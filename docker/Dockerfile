@@ -5,4 +5,7 @@ COPY . /digits/
 RUN pip3 install --no-cache-dir -r /digits/requirements.txt
 RUN mkdir -p models
 CMD ["pytest"]
-CMD ["python3","/digits/exp.py"]
+# RUN export FLASK_APP = app.py
+# CMD["flask","run"]
+
+# CMD ["python3","/digits/exp.py"]

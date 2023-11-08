@@ -2,7 +2,7 @@ from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn import tree
-from joblib import dump
+from joblib import dump,load
 
 
 def preprocess_data(digit_image) :
@@ -88,6 +88,7 @@ def predict_and_eval(model , X_test , y_test ) :
                     predictions of the model and prints the evaluation metrics
     '''
     # 
+    # model = load(model_path)
     predicted = model.predict(X_test)
 
     # ###############################################################################
