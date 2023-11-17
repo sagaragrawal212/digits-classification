@@ -49,3 +49,12 @@ docker run -it -p 5000:5000 digits:v1 bash
 
 docker run -it -p 5000:5000 digits:v1
 docker system prune
+
+
+installl azure cli
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+az login --use-device
+
+
+az acr build --file docker/Dockerfile --registry sagarmlops23 --image digits .

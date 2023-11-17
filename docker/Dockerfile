@@ -6,6 +6,7 @@ RUN pip3 install --no-cache-dir -r /digits/requirements.txt
 RUN mkdir -p models
 # CMD ["pytest"]
 ENV FLASK_APP=api/app
-CMD ["flask","run","--host=0.0.0.0"]
+# CMD ["flask","run","--host=0.0.0.0"]
+CMD ["python","api/app.py"]
 
 # CMD ["python3","/digits/exp.py"]
