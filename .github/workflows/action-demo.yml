@@ -30,6 +30,6 @@ jobs:
       - name: Run docker build experiment
         run :
           docker build -t digits:v1 -f docker/Dockerfile .
-      - name: Run docker
-        run :
-          docker run digits:v1
+      # - name: Run docker
+      #   run :
+      #     docker run digits:v1

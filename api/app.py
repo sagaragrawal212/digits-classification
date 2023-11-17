@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return 'Digit Classification Model Deployment'
 
 @app.route("/predict",methods =['POST'])
 def predict():
@@ -37,7 +37,7 @@ def predict():
     print("Prediction 1 : ",prediction1)
     print("Prediction 2 : ",prediction2)
     if prediction1 == prediction2 :
-        return "True"
+        return "True \n"
     else :
         return "False" 
 
