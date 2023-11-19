@@ -23,7 +23,7 @@ def hello_world():
 
 @app.route("/predict",methods =['POST'])
 def predict():
-    model_path = "/mnt/c/Users/HP/Desktop/project/digits-classification/models/svm_C : 0.1_gamma : 0.0001.joblib"
+    model_path = "./models/svm_C : 0.1_gamma : 0.0001.joblib"
     model = load(model_path)
     data = request.get_json()
     data['image'] = np.array(data['image']).astype(float)
@@ -34,6 +34,6 @@ def predict():
     return ({"Prediction": str(prediction[0])})
 
 if __name__ =="__main__" :
-    app.run(host = "0.0.0.0",port = 5000)
+    app.run(host = "0.0.0.0",port = 80)
     
     
