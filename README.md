@@ -54,16 +54,16 @@ docker system prune
 docker run -it -v /mnt/c/Users/HP/Desktop/project/di
 gits-classification/models:/digits/test digits:v1 bash
 
-
+## Azure Commands
 installl azure cli
 curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
+### Login
 az login --use-device
 
-
+### deploy to azure
 az acr build --file docker/Dockerfile --registry sagarmlops23 --image digits .
 
-az login --use-device
 
 ## Handy Curl Commands
 
