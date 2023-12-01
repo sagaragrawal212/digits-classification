@@ -75,7 +75,7 @@ from api.app import app
 def test_get_root() :
     response = app.test_client().get("/")
     assert response.status_code == 200 
-    assert response.get_data() == b'Hello, World!'
+    assert response.get_data() == b'Digit Classification Model Deployment'
 
 
 def test_post_predict():

@@ -58,3 +58,7 @@ az login --use-device
 
 
 az acr build --file docker/Dockerfile --registry sagarmlops23 --image digits .
+
+az login --use-device
+
+test
