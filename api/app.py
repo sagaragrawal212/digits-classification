@@ -16,10 +16,9 @@ import numpy as np
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return 'Digit Classification Model Deployment'
 
 @app.route("/predict",methods =['POST'])
 def predict():
@@ -35,5 +34,4 @@ def predict():
 
 if __name__ =="__main__" :
     app.run(host = "0.0.0.0",port = 80)
-    
     
