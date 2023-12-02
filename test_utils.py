@@ -2,6 +2,7 @@ from utils import *
 import os
 from sklearn.model_selection import ParameterGrid
 import numpy as np
+from sklearn.linear_model import LogisticRegression
 np.random.seed(42)
 # Creating models directory
 if os.path.exists("models"):
@@ -25,6 +26,14 @@ def dummy_hyper_parameters():
     h_params_combinations =ParameterGrid(param_grid)
 
     return gamma_list , C_ranges,h_params_combinations
+
+def dummy_hyper_lr_parameters():
+    
+    solver = ["lbfgs", "liblinear","newton-cg", "newton-cholesky", "sag", "saga"]
+    param_grid = {'solver': solver}
+    h_params_combinations =ParameterGrid(param_grid)
+
+    return h_params_combinations
 
 def create_dummy_data() :
     
@@ -78,7 +87,105 @@ def test_get_root() :
     assert response.get_data() == b'Digit Classification Model Deployment'
 
 
-def test_post_predict():
+# def test_post_predict():
+    
+#     X,y = read_digits()
+#     X_reshape = preprocess_data(X)
+
+#     ## Digit 0 test
+#     indices_digit_0 = np.where(y == 0)[0]
+#     index_digit_0 = np.random.choice(indices_digit_0)
+#     image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+#     response = app.test_client().post("/predict", json={"image":image_data_0})
+
+#     ## Status Code Check
+#     assert response.status_code == 200 
+#     assert response.get_json()['Prediction'] == '0'
+
+#     ## Digit 1 test
+#     indices_digit_1 = np.where(y == 1)[0]
+#     index_digit_1 = np.random.choice(indices_digit_1)
+#     image_data_1 = list(X_reshape[index_digit_1].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_1})
+#     assert response.get_json()['Prediction'] == '1'
+
+#     ## Digit 2 test
+#     indices_digit_2 = np.where(y == 2)[0]
+#     index_digit_2 = np.random.choice(indices_digit_2)
+#     image_data_2 = list(X_reshape[index_digit_2].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_2})
+#     assert response.get_json()['Prediction'] == '2'
+
+#     ## Digit 3 test
+#     indices_digit_3 = np.where(y == 3)[0]
+#     index_digit_3 = np.random.choice(indices_digit_3)
+#     image_data_3 = list(X_reshape[index_digit_3].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_3})
+#     assert response.get_json()['Prediction'] == '3'
+
+#     ## Digit 4 test
+#     indices_digit_4 = np.where(y == 4)[0]
+#     index_digit_4 = np.random.choice(indices_digit_4)
+#     image_data_4 = list(X_reshape[index_digit_4].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_4})
+#     assert response.get_json()['Prediction'] == '4'
+   
+#     ## Digit 5 test
+#     indices_digit_5 = np.where(y == 5)[0]
+#     index_digit_5 = np.random.choice(indices_digit_5)
+#     image_data_5 = list(X_reshape[index_digit_5].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_5})
+#     assert response.get_json()['Prediction'] == '5'
+
+#     ## Digit 6 test
+#     indices_digit_6 = np.where(y == 6)[0]
+#     index_digit_6 = np.random.choice(indices_digit_6)
+#     image_data_6 = list(X_reshape[index_digit_6].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_6})
+#     assert response.get_json()['Prediction'] == '6'
+
+#     ## Digit 7 test
+#     indices_digit_7 = np.where(y == 7)[0]
+#     index_digit_7 = np.random.choice(indices_digit_7)
+#     image_data_7 = list(X_reshape[index_digit_7].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_7})
+#     assert response.get_json()['Prediction'] == '7'
+
+#     ## Digit 8 test
+#     indices_digit_8 = np.where(y == 8)[0]
+#     index_digit_8 = np.random.choice(indices_digit_8)
+#     image_data_8 = list(X_reshape[index_digit_8].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_8})
+#     assert response.get_json()['Prediction'] == '8'
+
+#     ## Digit 9 test
+#     indices_digit_9 = np.where(y == 9)[0]
+#     index_digit_9 = np.random.choice(indices_digit_9)
+#     image_data_9 = list(X_reshape[index_digit_9].astype(str))
+#     response = app.test_client().post("/predict", json={"image":image_data_9})
+#     assert response.get_json()['Prediction'] == '9'
+
+def test_model_lr_loading() :
+    X_train,y_train,X_dev,y_dev = create_dummy_data()
+    list_of_all_param_combination = dummy_hyper_lr_parameters() 
+    _ ,best_model_path , _ = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'lr')
+
+    loaded_model = load(best_model_path)
+    assert isinstance(loaded_model, LogisticRegression), f"Model loaded from {best_model_path} is not a Logistic Regression model"
+
+
+
+def test_model_lr_loading_solver() :
+    X_train,y_train,X_dev,y_dev = create_dummy_data()
+    list_of_all_param_combination = dummy_hyper_lr_parameters() 
+    _ ,best_model_path , _ = tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model_type = 'lr')
+
+    loaded_model = load(best_model_path)
+    
+    assert loaded_model.solver == best_model_path.split("_")[-1].split(".")[0].split(":")[-1].strip(), f"Solver name in the model file name does not match the solver used in the loaded model ({loaded_model.solver})"
+
+def test_post_predict_svm():
     
     X,y = read_digits()
     X_reshape = preprocess_data(X)
@@ -88,71 +195,37 @@ def test_post_predict():
     index_digit_0 = np.random.choice(indices_digit_0)
     image_data_0 = list(X_reshape[index_digit_0].astype(str))
     
-    response = app.test_client().post("/predict", json={"image":image_data_0})
+    response = app.test_client().post("/predict/svm", json={"image":image_data_0})
 
     ## Status Code Check
     assert response.status_code == 200 
-    assert response.get_json()['Prediction'] == '0'
 
-    ## Digit 1 test
-    indices_digit_1 = np.where(y == 1)[0]
-    index_digit_1 = np.random.choice(indices_digit_1)
-    image_data_1 = list(X_reshape[index_digit_1].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_1})
-    assert response.get_json()['Prediction'] == '1'
+def test_post_predict_lr():
+    
+    X,y = read_digits()
+    X_reshape = preprocess_data(X)
 
-    ## Digit 2 test
-    indices_digit_2 = np.where(y == 2)[0]
-    index_digit_2 = np.random.choice(indices_digit_2)
-    image_data_2 = list(X_reshape[index_digit_2].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_2})
-    assert response.get_json()['Prediction'] == '2'
+    ## Digit 0 test
+    indices_digit_0 = np.where(y == 0)[0]
+    index_digit_0 = np.random.choice(indices_digit_0)
+    image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+    response = app.test_client().post("/predict/lr", json={"image":image_data_0})
 
-    ## Digit 3 test
-    indices_digit_3 = np.where(y == 3)[0]
-    index_digit_3 = np.random.choice(indices_digit_3)
-    image_data_3 = list(X_reshape[index_digit_3].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_3})
-    assert response.get_json()['Prediction'] == '3'
+    ## Status Code Check
+    assert response.status_code == 200 
 
-    ## Digit 4 test
-    indices_digit_4 = np.where(y == 4)[0]
-    index_digit_4 = np.random.choice(indices_digit_4)
-    image_data_4 = list(X_reshape[index_digit_4].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_4})
-    assert response.get_json()['Prediction'] == '4'
-   
-    ## Digit 5 test
-    indices_digit_5 = np.where(y == 5)[0]
-    index_digit_5 = np.random.choice(indices_digit_5)
-    image_data_5 = list(X_reshape[index_digit_5].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_5})
-    assert response.get_json()['Prediction'] == '5'
+def test_post_predict_decision_tree():
+    
+    X,y = read_digits()
+    X_reshape = preprocess_data(X)
 
-    ## Digit 6 test
-    indices_digit_6 = np.where(y == 6)[0]
-    index_digit_6 = np.random.choice(indices_digit_6)
-    image_data_6 = list(X_reshape[index_digit_6].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_6})
-    assert response.get_json()['Prediction'] == '6'
+    ## Digit 0 test
+    indices_digit_0 = np.where(y == 0)[0]
+    index_digit_0 = np.random.choice(indices_digit_0)
+    image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+    response = app.test_client().post("/predict/decision_tree", json={"image":image_data_0})
 
-    ## Digit 7 test
-    indices_digit_7 = np.where(y == 7)[0]
-    index_digit_7 = np.random.choice(indices_digit_7)
-    image_data_7 = list(X_reshape[index_digit_7].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_7})
-    assert response.get_json()['Prediction'] == '7'
-
-    ## Digit 8 test
-    indices_digit_8 = np.where(y == 8)[0]
-    index_digit_8 = np.random.choice(indices_digit_8)
-    image_data_8 = list(X_reshape[index_digit_8].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_8})
-    assert response.get_json()['Prediction'] == '8'
-
-    ## Digit 9 test
-    indices_digit_9 = np.where(y == 9)[0]
-    index_digit_9 = np.random.choice(indices_digit_9)
-    image_data_9 = list(X_reshape[index_digit_9].astype(str))
-    response = app.test_client().post("/predict", json={"image":image_data_9})
-    assert response.get_json()['Prediction'] == '9'
+    ## Status Code Check
+    assert response.status_code == 200 

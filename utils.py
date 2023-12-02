@@ -2,6 +2,8 @@ from sklearn import datasets, metrics, svm
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from sklearn import tree
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import normalize
 from joblib import dump,load
 
 
@@ -15,6 +17,9 @@ def preprocess_data(digit_image) :
 
     n_samples = len(digit_image)
     data = digit_image.reshape((n_samples, -1))
+
+    ## unit normalization
+    data = normalize(data)
 
     return data 
 
@@ -54,6 +59,8 @@ def train_model(X , y, model_params ,model_type = "svm" ) :
         clf = svm.SVC
     elif model_type == "decision_tree":
         clf = tree.DecisionTreeClassifier
+    elif model_type == "lr":
+        clf = LogisticRegression
 
     model = clf(**model_params)
     
@@ -145,11 +152,16 @@ def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model
     
     best_acc_so_far = -1
     best_model = None
-
+    
     for param_combination in list_of_all_param_combination :
         
         cur_model  = train_model(X_train,y_train,  param_combination,model_type = model_type)
         cur_accuracy,_,_ = predict_and_eval(cur_model,X_dev,y_dev)
+
+        if model_type == "lr" :
+            print(f"Accuracy of logistic regression with Solver {param_combination['solver']} is {cur_accuracy}")
+            lr_model_path = "./models/M22AIE212_" + model_type + "_" + param_combination['solver'] + ".joblib"
+            dump(cur_model,lr_model_path)
 
         if cur_accuracy > best_acc_so_far :
             print("New best accuracy : ",cur_accuracy)
@@ -159,5 +171,7 @@ def tune_hparams(X_train,y_train,X_dev,y_dev,list_of_all_param_combination,model
             best_model_path = "./models/" + model_type + "_" + "_".join([f'{k} : {v}' for k,v in optimal_params.items()]) + ".joblib"
             print(best_model_path)
         dump(best_model,best_model_path)
+
+
     return optimal_params , best_model_path , best_acc_so_far
 
