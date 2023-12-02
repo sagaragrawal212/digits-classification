@@ -184,3 +184,48 @@ def test_model_lr_loading_solver() :
     loaded_model = load(best_model_path)
     
     assert loaded_model.solver == best_model_path.split("_")[-1].split(".")[0].split(":")[-1].strip(), f"Solver name in the model file name does not match the solver used in the loaded model ({loaded_model.solver})"
+
+def test_post_predict_svm():
+    
+    X,y = read_digits()
+    X_reshape = preprocess_data(X)
+
+    ## Digit 0 test
+    indices_digit_0 = np.where(y == 0)[0]
+    index_digit_0 = np.random.choice(indices_digit_0)
+    image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+    response = app.test_client().post("/predict/svm", json={"image":image_data_0})
+
+    ## Status Code Check
+    assert response.status_code == 200 
+
+def test_post_predict_lr():
+    
+    X,y = read_digits()
+    X_reshape = preprocess_data(X)
+
+    ## Digit 0 test
+    indices_digit_0 = np.where(y == 0)[0]
+    index_digit_0 = np.random.choice(indices_digit_0)
+    image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+    response = app.test_client().post("/predict/lr", json={"image":image_data_0})
+
+    ## Status Code Check
+    assert response.status_code == 200 
+
+def test_post_predict_decision_tree():
+    
+    X,y = read_digits()
+    X_reshape = preprocess_data(X)
+
+    ## Digit 0 test
+    indices_digit_0 = np.where(y == 0)[0]
+    index_digit_0 = np.random.choice(indices_digit_0)
+    image_data_0 = list(X_reshape[index_digit_0].astype(str))
+    
+    response = app.test_client().post("/predict/decision_tree", json={"image":image_data_0})
+
+    ## Status Code Check
+    assert response.status_code == 200 
