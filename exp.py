@@ -55,7 +55,7 @@ parser.add_argument('-dev_size',
 parser.add_argument('-model',
             '--model_type',
             type = str,
-            default = 'decision_tree svm',
+            default = 'decision_tree svm lr',
             help = 'name of model')
 parser.add_argument('-config',
             '--config_path',
@@ -96,8 +96,15 @@ list_of_all_param_combination_svm = ParameterGrid(param_grid)
 param_grid = params_dict['decision_tree']
 list_of_all_param_combination_dt = ParameterGrid(param_grid)
 
+
+# Model 3 : Logistic Regression
+param_grid = params_dict['lr']
+list_of_all_param_combination_lr = ParameterGrid(param_grid)
+
+
 hparam_dict = {'svm' : list_of_all_param_combination_svm ,
-                    'decision_tree' : list_of_all_param_combination_dt }
+                    'decision_tree' : list_of_all_param_combination_dt,
+                    'lr'  : list_of_all_param_combination_lr }
 
 
 print("Iterating for different test and dev size : ")
@@ -147,22 +154,22 @@ for model_type in args.model_type.split(' ') :
             
     print(f"Average Dev Accuracy of {model_type}: ",sum(all_dev_accuracy)/max_run)
 
-print("Confusion Matrix Between SVM  Decision Tree predictions for Test Data : ")
-y_svm_pred = pd.Series(predictions['svm'], name='Production(SVM)')
-y_dt_pred= pd.Series(predictions['decision_tree'], name='Candidate(DT)')
-df_confusion = pd.crosstab(y_svm_pred, y_dt_pred)
-print(df_confusion)
+# print("Confusion Matrix Between SVM  Decision Tree predictions for Test Data : ")
+# y_svm_pred = pd.Series(predictions['svm'], name='Production(SVM)')
+# y_dt_pred= pd.Series(predictions['decision_tree'], name='Candidate(DT)')
+# df_confusion = pd.crosstab(y_svm_pred, y_dt_pred)
+# print(df_confusion)
 
-# SVM test predictions Comparison with actuals
-y_check_svm = y_svm_pred == actuals['svm']
+# # SVM test predictions Comparison with actuals
+# y_check_svm = y_svm_pred == actuals['svm']
 
-# Decision tree test Comparison with actuals
-y_check_dt = y_dt_pred == actuals['decision_tree']
+# # Decision tree test Comparison with actuals
+# y_check_dt = y_dt_pred == actuals['decision_tree']
 
-y_svm = pd.Series(y_check_svm, name='Production(SVM)')
-y_dt = pd.Series(y_check_dt, name='Candidate(DT)')
-df_confusion = pd.crosstab(y_svm, y_dt)
-print(df_confusion)
+# y_svm = pd.Series(y_check_svm, name='Production(SVM)')
+# y_dt = pd.Series(y_check_dt, name='Candidate(DT)')
+# df_confusion = pd.crosstab(y_svm, y_dt)
+# print(df_confusion)
 
-print("F1 Score Production (SVM)" , f1_score(actuals['svm'], y_svm_pred, average='macro'))
-print("F1 Score Candidate (DT)" , f1_score(actuals['decision_tree'], y_dt_pred, average='macro'))
+# print("F1 Score Production (SVM)" , f1_score(actuals['svm'], y_svm_pred, average='macro'))
+# print("F1 Score Candidate (DT)" , f1_score(actuals['decision_tree'], y_dt_pred, average='macro'))
