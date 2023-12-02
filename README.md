@@ -33,6 +33,11 @@ which provides the `--lf` and `--ff` options, as well as the `cache` fixture.
 
 See [the docs](https://docs.pytest.org/en/stable/how-to/cache.html) for more information.
 
+## virtual env
+virtualenv -p /usr/bin/python3 digits
+source digits/bin/activate
+
+
 docker exec -it containerid bash
 
 ## Build Image : 
